@@ -22,14 +22,13 @@ class CNLicensePlateDetector(object):
         """
         resize image to yolo-v4 input size
 
-        :param image: cv2 image data with channel order BGR
+        :param image: cv2 image data with channel order RGB
         :return:
         """
         self._height, self._width, self._channels = image.shape
 
         self._scale_height_ratio = 512.0 / self._height
         self._scale_width_ratio = 512.0 / self._width
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         resized_image = cv2.resize(image, (512, 512))
         resized_normalized_image = resized_image / 255.0
         images_data = np.asarray([resized_normalized_image]).astype(np.float32)

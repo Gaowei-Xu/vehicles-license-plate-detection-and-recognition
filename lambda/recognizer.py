@@ -40,7 +40,6 @@ class CNLicensePlateRecognizer(object):
         :return:
         """
         image_data = cv2.resize(roi, (self._model_input_image_width, self._model_input_image_height))
-        image_data = image_data[:, :, ::-1]     # convert BGR to RGB
         image_data_float = image_data.astype('float32')
         image_data_float /= 255.0
         image_data_float = np.asarray([image_data_float]).astype(np.float32)

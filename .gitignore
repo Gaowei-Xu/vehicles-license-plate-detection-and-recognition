@@ -11,3 +11,7 @@ tensorflow/models/*
 tensorflow/recognizer/samples/*
 
 .idea/*
+
+videos/*
+.DS_Store
+

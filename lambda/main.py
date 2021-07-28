@@ -45,7 +45,7 @@ def handler(event, context):
     print('The video {} contains {} frames'.format(local_temp_path, duration))
 
     for frame_index in range(0, duration, frame_interval):
-        image = vr[frame_index].asnumpy()
+        image = vr[frame_index].asnumpy()       # RGB order
         print('Frame {}/{}: image frame shape = {}'.format(frame_index+1, duration, image.shape))
 
         # step 1: detect all bounding boxes with their confidence score
