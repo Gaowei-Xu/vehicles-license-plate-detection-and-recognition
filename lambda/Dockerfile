@@ -22,7 +22,7 @@ RUN python3 -m pip install --upgrade pip==21.2.1
 RUN pip3 install --no-cache decord==0.6.0 \
     tensorflow==2.5.0 \
     requests==2.25.1 \
-    numpy==1.21.0
+    numpy==1.19.1
 
 COPY main.py ./
 CMD [ "main.handler" ]
