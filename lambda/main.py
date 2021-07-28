@@ -1,61 +1,93 @@
 import os
 import json
-import base64
-import requests
-import random
-import time
-import numpy as np
 import boto3
+import uuid
 from decord import VideoReader
+from detector import CNLicensePlateDetector
+from recognizer import CNLicensePlateRecognizer
 
 
-# configuration
-AI_INFERENCE_ENDPOINT = "https://your_inference_endpoint_url"
 s3 = boto3.resource('s3')
+dynamodb = boto3.client('dynamodb')
 
 
-def get_base64_encoding(full_path):
-    with open(full_path, "rb") as f:
-        data = f.read()
-        image_base64_enc = base64.b64encode(data)
-        image_base64_enc = str(image_base64_enc, 'utf-8')
+# Load the license plate detection & recognition model
+license_plate_detector = CNLicensePlateDetector(model_root_path='/opt/ml/models/detector')
+license_plate_recognizer = CNLicensePlateRecognizer(model_root_path='/opt/ml/models/recognizer')
 
-    return image_base64_enc
+# process a frame every frame_interval
+frame_interval = 20
 
 
 def handler(event, context):
+    """
+    perform license plate detection and recognition
+
+    :param event: passing event
+    :param context: computing context
+    :return: None
+    """
     bucket_name = os.environ['S3BucketName']
-    mp4_video_clip_name = event['Records'][0]['s3']['object']['key']
-    local_temp_path = '/tmp/' + mp4_video_clip_name
+    ddb_table_name = os.environ['DynamoDBTableName']
+    ddb_primary_key = os.environ['DynamoDBPrimaryKey']
+
+    video_clip_name = event['Records'][0]['s3']['object']['key']
+    local_temp_path = '/tmp/' + video_clip_name
 
     # download mp4 video clip from s3 bucket
-    s3.meta.client.download_file(bucket_name, mp4_video_clip_name, local_temp_path)
+    s3.meta.client.download_file(bucket_name, video_clip_name, local_temp_path)
+    print('bucket_name = {}'.format(bucket_name))
+    print('video_clip_name = {}'.format(video_clip_name))
 
-    # load video clip and pick up key frame
+    # load video clip
     vr = VideoReader(local_temp_path)
     duration = len(vr)
-    index = random.randint(0, duration)
-    frame_selected = vr[index].asnumpy()
     print('The video {} contains {} frames'.format(local_temp_path, duration))
-    print('Frame shape = {}'.format(frame_selected.shape))
-    print('type(frame_selected) = {}'.format(type(frame_selected)))
 
-    # execute base64 encoding for key frame
-    image_base64_enc = base64.b64encode(frame_selected)
-    image_base64_enc = str(image_base64_enc, 'utf-8')
-    print('image_base64_enc = {}'.format(image_base64_enc))
+    for frame_index in range(0, duration, frame_interval):
+        image = vr[frame_index].asnumpy()
+        print('Frame {}/{}: image frame shape = {}'.format(frame_index+1, duration, image.shape))
 
-    # send HTTPS request to AI Service
-    request_body = {
-        "timestamp": str(time.time()),
-        "request_id": 1242322,
-        "image_base64_enc": image_base64_enc
-    }
+        # step 1: detect all bounding boxes with their confidence score
+        detect_boxes, detect_scores = license_plate_detector.detect(image)
 
-    response = requests.post(AI_INFERENCE_ENDPOINT, data=json.dumps(request_body))
-    print('AI Inference Response = {}'.format(response))
+        # step 2: recognize these bounding boxes
+        recognize_boxes, recognize_scores, recognize_texts = license_plate_recognizer.recognize(
+            image=image,
+            boxes=detect_boxes,
+            confidences=detect_scores,
+            conf_thresh=0.85)
 
-    # Save response into DynamoDB/S3/RDS, etc.
-    pass
+        # step 3: save response into dynamodb
+        detection_response = json.dumps({
+            'boxes': detect_boxes,              # shape = (N, 4)
+            'confidences': detect_scores        # shape = (N, 1)
+        })
+        recognition_response = json.dumps({
+            'boxes': recognize_boxes,           # shape = (N, 4)
+            'confidences': recognize_scores,    # shape = (N, 1)
+            'texts': recognize_texts            # shape = (N, 1)
+        })
 
-    return response
+        print('Frame {}/{}: Detection response = {}'.format(frame_index+1, duration, detection_response))
+        print('Frame {}/{}: Recognition response = {}'.format(frame_index+1, duration, recognition_response))
+
+        event_id = str(uuid.uuid4())
+        insert_item = {
+            ddb_primary_key: {'S': event_id},
+            'video_source': {'S': os.path.join(bucket_name, video_clip_name)},
+            'frames_amount': {'N': duration},
+            'frames_interval': {'N': frame_interval},
+            'frame_index': {'N': frame_index},
+            'detect_response': {'N': detection_response},
+            'recognize_response': {'N': recognition_response}
+        }
+
+        response = dynamodb.put_item(
+            TableName=ddb_table_name,
+            Item=insert_item
+        )
+        print('Frame {}/{}: Dynamodb put item response = {}'.format(frame_index+1, duration, response))
+
+    print('Lambda Task Completed.')
+    return None

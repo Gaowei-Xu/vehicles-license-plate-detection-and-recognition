@@ -21,8 +21,10 @@ RUN cd /opt/ml/models/ && unzip recognizer.zip && rm recognizer.zip
 RUN python3 -m pip install --upgrade pip==21.2.1
 RUN pip3 install --no-cache decord==0.6.0 \
     tensorflow==2.5.0 \
-    requests==2.25.1 \
-    numpy==1.19.1
+    requests==2.25.1
 
 COPY main.py ./
+COPY detector.py ./
+COPY recognizer.py ./
+
 CMD [ "main.handler" ]

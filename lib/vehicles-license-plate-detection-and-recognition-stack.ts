@@ -66,8 +66,8 @@ export class VehiclesLicensePlateDetectionAndRecognitionStack extends cdk.Stack 
             code: lambda.DockerImageCode.fromImageAsset('./lambda/'),
             environment: {
                 S3BucketName: videosAsset.bucketName,
-                DynamoDBName: licensePlateInfoTable.tableName,
-                DynamoDBPrimaryKey: 'event'
+                DynamoDBTableName: licensePlateInfoTable.tableName,
+                DynamoDBPrimaryKey: 'event',
             },
             timeout: cdk.Duration.minutes(15),
             role: role,
