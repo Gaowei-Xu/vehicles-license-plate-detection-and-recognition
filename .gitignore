@@ -9,3 +9,5 @@ cdk.out
 
 tensorflow/models/*
 tensorflow/recognizer/samples/*
+
+.idea/*
