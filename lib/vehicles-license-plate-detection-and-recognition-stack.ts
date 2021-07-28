@@ -63,7 +63,7 @@ export class VehiclesLicensePlateDetectionAndRecognitionStack extends cdk.Stack 
         this,
         'frameExtractorWithLicensePlateDetectionAndRecognition',
         {
-            code: lambda.DockerImageCode.fromImageAsset('./lambda/objectDetect'),
+            code: lambda.DockerImageCode.fromImageAsset('./lambda/'),
             environment: {
                 S3BucketName: videosAsset.bucketName,
                 DynamoDBName: licensePlateInfoTable.tableName,
