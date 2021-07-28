@@ -201,11 +201,16 @@ nohup ./darknet detector train data/pets.data cfg/yolov4-pets.cfg models/yolov4.
    
 ### 训练车牌识别模型
 
-#### 1. EC2训练环境准备和数据下载
+#### 1. 车牌识别网络设计
+
+![license_plate_recognition_model](./tensorflow/recognizer/license_plate_recognition_model.png)
+
+
+#### 2. EC2训练环境准备和数据下载
 
 
 
-#### 2. 开始车牌识别模型训练
+#### 3. 开始车牌识别模型训练
 
 
 
