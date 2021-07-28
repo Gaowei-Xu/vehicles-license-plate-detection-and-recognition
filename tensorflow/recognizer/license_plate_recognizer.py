@@ -22,6 +22,12 @@ class LicensePlateRecognizer(object):
 
         self._model = self.build_model()
         self._model.summary()
+        tf.keras.utils.plot_model(
+            self._model,
+            show_shapes=True,
+            show_dtype=True,
+            to_file='license_plate_recognition_model.png',
+            dpi=200)
 
         self._batch_generator = LicensePlateRecognitionBatchLoader(
             license_plate_roi_images_root_dir=self._dataset_root_dir,
