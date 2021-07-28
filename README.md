@@ -30,6 +30,45 @@
 
 整个部署过程包括编译镜像和资源部署，大概需要10-20分钟。
 
+该解决方案支持`aws-cdk`进行部署，部署示例如下：
+1. 启动`Amazon EC2`实例，如`us-east-1`区域选择系统镜像`Ubuntu Server 18.04 LTS (HVM), SSD Volume Type - ami-0747bdcabd34c712a (64-bit x86) / ami-08353a25e80beea3e (64-bit Arm)
+`，机型选择`t2.large`，添加存储`128 GiB`，启动机器；
+
+
+2. 通过`ssh`登录至上述实例，安装依赖项，如下所示：
+```angular2html
+sudo apt-get update
+sudo apt-get install -y cmake git zip awscli
+sudo apt install nodejs npm
+sudo npm install -g n
+sudo n stable
+PATH="$PATH"
+sudo n 16.2.0
+sudo npm install -g npm@7.19.0
+sudo npm install -g aws-cdk@1.115.0
+
+sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io
+sudo groupadd docker
+sudo usermod -aG docker ${USER}
+```
+上述命令执行完成之后需要登出（命令行输入`logout`）后再次登入（`ssh`登录至实例）使得`Docker`生效。
+
+3. 用户配置
+配置`IAM User`，在命令行输入`aws configure`后，输入`AWS Access Key ID`, `AWS Secret Access Key`，`Default region name`和
+`Default output format`，该`IAM User`需要具有创建该解决方案中所有资源的权限（可以为其赋予`AdministratorAccess`权限）。
+
+4. 部署方案
+```angular2html
+git clone https://github.com/Gaowei-Xu/vehicles-license-plate-detection-and-recognition.git
+cd vehicles-license-plate-detection-and-recognition/
+npm install
+cdk deploy
+```
+
 
 
 

@@ -88,12 +88,14 @@ export class VehiclesLicensePlateDetectionAndRecognitionStack extends cdk.Stack 
         videosAsset,
         {
             events: [ s3.EventType.OBJECT_CREATED],
-            filters: [
-                { suffix: '.mp4' },
-                { suffix: '.ts' }
-            ]
-        }
-    ));
+            filters: [ { suffix: '.mp4' } ]
+    }));
+    frameExtractorWithLicensePlateDetectionAndRecognition.addEventSource(new S3EventSource(
+        videosAsset,
+        {
+            events: [ s3.EventType.OBJECT_CREATED],
+            filters: [ { suffix: '.ts' } ]
+    }));
 
   }
 }
