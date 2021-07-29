@@ -59,7 +59,7 @@ def handler(event, context):
             confidences=detect_scores,
             conf_thresh=0.5)
 
-        if detect_boxes.shape[0] == 0:
+        if len(detect_boxes) == 0:
             print('Frame {}/{}: detect_boxes = {}, detect_scores = {}'.format(
                 frame_index + 1, duration, detect_boxes, detect_scores))
             continue
