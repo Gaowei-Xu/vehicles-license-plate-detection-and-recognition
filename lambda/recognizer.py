@@ -90,7 +90,7 @@ class CNLicensePlateRecognizer(object):
         :param conf_thresh: threshold of bounding boxes
         :return: a dictionary with text and its corresponding probabilities
         """
-        amount = boxes.shape[0]
+        amount = len(boxes)
         rec_boxes = list()
         rec_scores = list()
         rec_texts = list()
@@ -107,7 +107,7 @@ class CNLicensePlateRecognizer(object):
             predictions = self._recognizer(roi_batch_data)
             license_text = self.get_text(predictions=predictions)
 
-            rec_boxes.append(bounding_box.tolist())
+            rec_boxes.append(bounding_box)
             rec_scores.append([score])
             rec_texts.append([license_text])
 
