@@ -2,6 +2,7 @@ import os
 import json
 import boto3
 import uuid
+import numpy as np
 from decord import VideoReader
 from detector import CNLicensePlateDetector
 from recognizer import CNLicensePlateRecognizer
@@ -44,7 +45,7 @@ def handler(event, context):
     duration = len(vr)
     print('The video {} contains {} frames'.format(local_temp_path, duration))
 
-    for frame_index in range(0, duration, frame_interval):
+    for frame_index in np.arange(0, duration, frame_interval):
         image = vr[frame_index].asnumpy()       # RGB order
         print('Frame {}/{}: image frame shape = {}'.format(frame_index+1, duration, image.shape))
 
@@ -58,10 +59,15 @@ def handler(event, context):
             confidences=detect_scores,
             conf_thresh=0.5)
 
+        if detect_boxes.shape[0] == 0:
+            print('Frame {}/{}: detect_boxes = {}, detect_scores = {}'.format(
+                frame_index + 1, duration, detect_boxes, detect_scores))
+            continue
+
         # step 3: save response into dynamodb
         detection_response = json.dumps({
             'boxes': detect_boxes.tolist(),              # shape = (N, 4)
-            'confidences': detect_scores .tolist()       # shape = (N, 1)
+            'confidences': detect_scores.tolist()        # shape = (N, 1)
         })
         recognition_response = json.dumps({
             'boxes': recognize_boxes,           # shape = (N, 4)
@@ -90,4 +96,5 @@ def handler(event, context):
         print('Frame {}/{}: Dynamodb put item response = {}'.format(frame_index+1, duration, response))
 
     print('Lambda Task Completed.')
+
     return None
