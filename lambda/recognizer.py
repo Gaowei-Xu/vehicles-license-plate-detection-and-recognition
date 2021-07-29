@@ -70,7 +70,7 @@ class CNLicensePlateRecognizer(object):
         p7_index = np.argmax(p7)
 
         text = str()
-        text += self._provinces[p1_index]
+        text += self._provinces[p1_index].encode('utf-8').decode('unicode_escape')
         text += self._alphabets[p2_index]
         text += self._ads[p3_index]
         text += self._ads[p4_index]

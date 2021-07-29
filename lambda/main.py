@@ -57,7 +57,7 @@ def handler(event, context):
             image=image,
             boxes=detect_boxes,
             confidences=detect_scores,
-            conf_thresh=0.5)
+            conf_thresh=0.25)
 
         if len(detect_boxes) == 0:
             print('Frame {}/{}: detect_boxes = {}, detect_scores = {}'.format(
