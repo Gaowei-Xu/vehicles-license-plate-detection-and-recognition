@@ -43,11 +43,9 @@ def handler(event, context):
     # load video clip
     vr = VideoReader(local_temp_path)
     duration = len(vr)
-    print('The video {} contains {} frames'.format(local_temp_path, duration))
 
     for frame_index in np.arange(0, duration, frame_interval):
         image = vr[frame_index].asnumpy()       # RGB order
-        print('Frame {}/{}: image frame shape = {}'.format(frame_index+1, duration, image.shape))
 
         # step 1: detect all bounding boxes with their confidence score
         detect_boxes, detect_scores = license_plate_detector.detect(image)
@@ -60,8 +58,8 @@ def handler(event, context):
             conf_thresh=0.25)
 
         if len(detect_boxes) == 0:
-            print('Frame {}/{}: detect_boxes = {}, detect_scores = {}'.format(
-                frame_index + 1, duration, detect_boxes, detect_scores))
+            print('Frame {}/{}: image shape = {}, detect_boxes = {}, detect_scores = {}'.format(
+                frame_index + 1, duration, image.shape, detect_boxes, detect_scores))
             continue
 
         # step 3: save response into dynamodb
@@ -75,8 +73,8 @@ def handler(event, context):
             'texts': recognize_texts            # shape = (N, 1)
         })
 
-        print('Frame {}/{}: Detection response = {}'.format(frame_index+1, duration, detection_response))
-        print('Frame {}/{}: Recognition response = {}'.format(frame_index+1, duration, recognition_response))
+        print('Frame {}/{}: image shape = {}, detection = {}, recognition = {}'.format(
+            frame_index + 1, duration, image.shape, detection_response, recognition_response))
 
         event_id = str(uuid.uuid4())
         insert_item = {
@@ -93,7 +91,6 @@ def handler(event, context):
             TableName=ddb_table_name,
             Item=insert_item
         )
-        print('Frame {}/{}: Dynamodb put item response = {}'.format(frame_index+1, duration, response))
 
     print('Lambda Task Completed.')
 
