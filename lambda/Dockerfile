@@ -4,7 +4,6 @@ FROM public.ecr.aws/lambda/python:3.8
 RUN yum -y update && \
     yum install -y wget \
     unzip \
-    opencv-python \
     opencv-devel
 
 RUN mkdir -p /opt/ml/models/
@@ -15,7 +14,8 @@ RUN cd /opt/ml/models/ && unzip recognizer.zip && rm recognizer.zip
 
 RUN pip install --no-cache decord==0.6.0 \
     tensorflow==2.5.0 \
-    requests==2.25.1
+    requests==2.25.1 \
+    opencv-python==4.5.3.56
 
 COPY main.py ./
 COPY detector.py ./
