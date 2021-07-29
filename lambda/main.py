@@ -17,7 +17,7 @@ license_plate_detector = CNLicensePlateDetector(model_root_path='/opt/ml/models/
 license_plate_recognizer = CNLicensePlateRecognizer(model_root_path='/opt/ml/models/recognizer')
 
 # process a frame every frame_interval
-frame_interval = 20
+frame_interval = 10
 
 
 def handler(event, context):

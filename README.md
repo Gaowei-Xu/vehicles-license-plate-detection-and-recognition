@@ -15,7 +15,8 @@
 组件实现。用户基于该解决方案架构可以实现车牌的自动检测和识别，该方案基于无服务架构实现，用户设备侧上传视频片段到
 云端S3桶中，会自动触发`Lambda`函数进行车牌检测（检测网络为`yolo-v4`）和识别， 识别结果会被存储到`DynamoDB`中进行存储。该方案中
 针对检测和识别的是中国城市车牌，所用到的训练数据集为[CCPD (Chinese City Parking Dataset)](https://github.com/detectRecog/CCPD) ，
-迁移至其他地域的车牌检测和识别需要收集当地的数据集来训练算法模型。
+数据集中图像基本均为各种停车场景下进行捕捉的，视角基本是平视。迁移至其他地域其他应用场景下的车牌检测和识别需要收集当地的数据集，以及相应
+视角场景下的数据来训练算法模型。
 
 架构图如下所示:
 ![license_plate_detection_and_recognition_serverless_architecture](architecture.png)
@@ -31,7 +32,7 @@
 
 整个部署过程包括编译镜像和资源部署，大概需要10-20分钟。
 
-该解决方案支持`aws-cdk`进行部署，部署示例如下：
+该解决方案支持`aws-cdk`进行部署，部署区域的`lambda`服务需要支持从容器镜像启动，部署示例如下：
 
 1. 启动`Amazon EC2`实例，如`us-east-1`区域选择系统镜像`Ubuntu Server 18.04 LTS (HVM), SSD Volume Type - ami-0747bdcabd34c712a (64-bit x86) / ami-08353a25e80beea3e (64-bit Arm)
 `，机型选择`t2.large`，添加存储`128 GiB`，启动机器；
