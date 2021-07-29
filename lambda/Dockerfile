@@ -23,8 +23,19 @@ RUN pip3 install --no-cache decord==0.6.0 \
     tensorflow==2.5.0 \
     requests==2.25.1
 
-COPY main.py ./
-COPY detector.py ./
-COPY recognizer.py ./
+RUN mkdir -p /opt/program/
+COPY main.py /opt/program/
+COPY detector.py /opt/program/
+COPY recognizer.py /opt/program
+
+WORKDIR /opt/program
+
+# Set some environment variables. PYTHONUNBUFFERED keeps Python from buffering our standard
+# output stream, which means that logs can be delivered to the user quickly. PYTHONDONTWRITEBYTECODE
+# keeps Python from writing the .pyc files which are unnecessary in this case. We also update
+# PATH so that the train and serve programs are found when the container is invoked.
+ENV PYTHONUNBUFFERED=TRUE
+ENV PYTHONDONTWRITEBYTECODE=TRUE
+ENV PATH="/opt/program:${PATH}"
 
 CMD [ "main.handler" ]
