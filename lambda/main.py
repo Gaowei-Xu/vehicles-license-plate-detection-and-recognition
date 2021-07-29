@@ -76,11 +76,11 @@ def handler(event, context):
         insert_item = {
             ddb_primary_key: {'S': event_id},
             'video_source': {'S': os.path.join(bucket_name, video_clip_name)},
-            'frames_amount': {'N': str(duration)},
-            'frames_interval': {'N': str(frame_interval)},
-            'frame_index': {'N': str(frame_index)},
-            'detect_response': {'N': detection_response},
-            'recognize_response': {'N': recognition_response}
+            'frames_amount': {'S': str(duration)},
+            'frames_interval': {'S': str(frame_interval)},
+            'frame_index': {'S': str(frame_index)},
+            'detect_response': {'S': detection_response},
+            'recognize_response': {'S': recognition_response}
         }
 
         response = dynamodb.put_item(
