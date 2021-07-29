@@ -16,9 +16,9 @@ class CNLicensePlateRecognizer(object):
 
         # DO NOT MODIFY
         self._provinces = [
-            "皖", "沪", "津", "渝", "冀", "晋", "蒙", "辽", "吉", "黑", "苏", "浙", "京", "闽",
-            "赣", "鲁", "豫", "鄂", "湘", "粤", "桂", "琼", "川", "贵", "云", "藏", "陕", "甘",
-            "青", "宁", "新", "警", "学", "O"]
+            u"皖", u"沪", u"津", u"渝", u"冀", u"晋", u"蒙", u"辽", u"吉", u"黑", u"苏", u"浙", u"京", u"闽",
+            u"赣", u"鲁", u"豫", u"鄂", u"湘", u"粤", u"桂", u"琼", u"川", u"贵", u"云", u"藏", u"陕", u"甘",
+            u"青", u"宁", u"新", u"警", u"学", "O"]
         self._alphabets = [
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R',
             'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'O']
@@ -70,7 +70,7 @@ class CNLicensePlateRecognizer(object):
         p7_index = np.argmax(p7)
 
         text = str()
-        text += self._provinces[p1_index].encode('utf-8').decode('unicode_escape')
+        text += self._provinces[p1_index]
         text += self._alphabets[p2_index]
         text += self._ads[p3_index]
         text += self._ads[p4_index]
