@@ -66,8 +66,8 @@ def handler(event, context):
 
         # step 3: save response into dynamodb
         detection_response = json.dumps({
-            'boxes': detect_boxes.tolist(),              # shape = (N, 4)
-            'confidences': detect_scores.tolist()        # shape = (N, 1)
+            'boxes': detect_boxes,              # shape = (N, 4)
+            'confidences': detect_scores        # shape = (N, 1)
         })
         recognition_response = json.dumps({
             'boxes': recognize_boxes,           # shape = (N, 4)

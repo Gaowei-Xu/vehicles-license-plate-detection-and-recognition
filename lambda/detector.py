@@ -71,12 +71,9 @@ class CNLicensePlateDetector(object):
                 int(scale_x_max * 512.0 / self._scale_width_ratio),
                 int(scale_y_max * 512.0 / self._scale_height_ratio),
             ])
-            ret_bbox_scores.append([confidence])
-            ret_class_ids.append([cls_id])
+            ret_bbox_scores.append([float(confidence)])
+            ret_class_ids.append([int(cls_id)])
 
-        ret_bbox_coords = np.array(ret_bbox_coords)
-        ret_bbox_scores = np.array(ret_bbox_scores)
-        ret_class_ids = np.array(ret_class_ids)
         return ret_bbox_coords, ret_bbox_scores, ret_class_ids
 
     def detect(self, image):
