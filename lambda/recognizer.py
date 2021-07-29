@@ -107,7 +107,7 @@ class CNLicensePlateRecognizer(object):
             predictions = self._recognizer(roi_batch_data)
             license_text = self.get_text(predictions=predictions)
 
-            rec_boxes.append(bounding_box)
+            rec_boxes.append(bounding_box.tolist())
             rec_scores.append([score])
             rec_texts.append([license_text])
 

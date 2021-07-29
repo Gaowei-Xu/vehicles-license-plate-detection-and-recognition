@@ -13,7 +13,7 @@ RUN cd /opt/ml/models/ && unzip detector.zip && rm detector.zip
 RUN cd /opt/ml/models/ && unzip recognizer.zip && rm recognizer.zip
 
 RUN pip install --no-cache decord==0.6.0 \
-    tensorflow==2.5.0 \
+    tensorflow==2.4.0 \
     requests==2.25.1 \
     opencv-python==4.5.3.56
 
