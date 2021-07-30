@@ -9,7 +9,6 @@ from recognizer import CNLicensePlateRecognizer
 
 
 s3 = boto3.resource('s3')
-dynamodb = boto3.client('dynamodb')
 
 
 # Load the license plate detection & recognition model
@@ -83,12 +82,15 @@ def handler(event, context):
 
     # dump detection and recognition results into S3 bucket
     event_data['response'] = frames_response_list
-    serialized_data = json.dumps(event_data, separators=(',', ':'))
+    print('event_data = {}'.format(event_data))
+    serialized_data = json.dumps(event_data, ensure_ascii=False, indent=4)
+    print('serialized_data = {}'.format(serialized_data))
+
     s3_dump_response = s3.put_object(
         Bucket=inference_results_bucket_name,
         Key=video_clip_name + '_response.json',
         Body=serialized_data)
-
+    print('s3_dump_response = {}'.format(s3_dump_response))
     print('Lambda Task Completed.')
 
     return None

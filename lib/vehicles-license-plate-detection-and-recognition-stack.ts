@@ -2,7 +2,6 @@ import * as cdk from '@aws-cdk/core';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as iam from '@aws-cdk/aws-iam';
-import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import {S3EventSource} from "@aws-cdk/aws-lambda-event-sources";
 
 
@@ -72,7 +71,7 @@ export class VehiclesLicensePlateDetectionAndRecognitionStack extends cdk.Stack 
     * Add S3 trigger event
     * Every time a .mp4 / .ts video clip is uploaded into S3 bucket, it triggers the lambda function to
     * extract key frames and perform license plate detection and recognition. Finally the results are
-    * dumped into DynamoDB
+    * dumped into S3 bucket
     */
     frameExtractorWithLicensePlateDetectionAndRecognition.addEventSource(new S3EventSource(
         videosAsset,
