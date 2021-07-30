@@ -24,23 +24,17 @@ export class VehiclesLicensePlateDetectionAndRecognitionStack extends cdk.Stack 
         }
     );
 
-
     /**
-    * Dynamodb Provision: it is used to store the inference results
-    */
-    const licensePlateInfoTable = new dynamodb.Table(
+     * S3 bucket provision: Create a bucket which is used to store all inference results
+     */
+    const inferenceResults = new s3.Bucket(
         this,
-        'licensePlateInfoTable',
+        'inferenceResults',
         {
-            partitionKey: {
-                name: 'event',
-                type: dynamodb.AttributeType.STRING
-            },
-            billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
             removalPolicy: cdk.RemovalPolicy.DESTROY,
+            autoDeleteObjects: true,
         }
     );
-
 
     /**
     * Lambda functions allow specifying their handlers within docker images. The docker
@@ -65,18 +59,14 @@ export class VehiclesLicensePlateDetectionAndRecognitionStack extends cdk.Stack 
         {
             code: lambda.DockerImageCode.fromImageAsset('./lambda/'),
             environment: {
-                S3BucketName: videosAsset.bucketName,
-                DynamoDBTableName: licensePlateInfoTable.tableName,
-                DynamoDBPrimaryKey: 'event',
+                VideoAssetsS3BucketName: videosAsset.bucketName,
+                InferenceResultsS3BucketName: inferenceResults.bucketName,
             },
             timeout: cdk.Duration.minutes(15),
             role: role,
             memorySize: 10240,
         }
     );
-    // assign dynamodb permissions for lambda functions
-    licensePlateInfoTable.grantWriteData(frameExtractorWithLicensePlateDetectionAndRecognition);
-
 
     /**
     * Add S3 trigger event

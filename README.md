@@ -11,21 +11,20 @@
 
 
 ## 方案介绍
-该解决方案基于`Amazon S3`，`Amazon Lambda`，`Amazon Elastic Container Registry (ECR)`，`Amazon DynamoDB`
+该解决方案基于`Amazon S3`，`Amazon Lambda`，`Amazon Elastic Container Registry (ECR)`
 组件实现。用户基于该解决方案架构可以实现车牌的自动检测和识别，该方案基于无服务架构实现，用户设备侧上传视频片段到
-云端S3桶中，会自动触发`Lambda`函数进行车牌检测（检测网络为`yolo-v4`）和识别， 识别结果会被存储到`DynamoDB`中进行存储。该方案中
+云端S3桶中，会自动触发`Lambda`函数进行车牌检测（检测网络为`yolo-v4`）和识别， 识别结果会被存储到`Amazon S3`桶中进行存储。该方案中
 针对检测和识别的是中国城市车牌，所用到的训练数据集为[CCPD (Chinese City Parking Dataset)](https://github.com/detectRecog/CCPD) ，
-数据集中图像基本均为各种停车场景下进行捕捉的，视角基本是平视。迁移至其他地域其他应用场景下的车牌检测和识别需要收集当地的数据集，以及相应
+数据集中图像基本均为各种停车场景下进行捕捉的，视角基本是平视。迁移至其他地域其他应用场景下的车牌检测和识别需要收集当地的数据集，同时需要用相应
 视角场景下的数据来训练算法模型。
 
 架构图如下所示:
 ![license_plate_detection_and_recognition_serverless_architecture](architecture.png)
 
 架构图中各个组件的功能描述如下:
-1. `Amazon S3`: 用来存储用户设备端的视频片段；
+1. `Amazon S3`: 用来存储用户设备端的视频片段，和用来存储车牌识别和检测的推理结果；
 1. `Amazon Lambda`: 完成视频片段的抽帧，以及对图像帧中的车牌进行检测和识别；
 1. `Amazon Elastic Container Registry (ECR)`: 存储着车牌检测和识别处理镜像；
-1. `Amazon DynamoDB`: 存储着每一个车牌检测和识别事件的结果。
 
 
 ## 方案部署

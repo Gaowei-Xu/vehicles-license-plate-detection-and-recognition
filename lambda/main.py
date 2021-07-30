@@ -28,21 +28,29 @@ def handler(event, context):
     :param context: computing context
     :return: None
     """
-    bucket_name = os.environ['S3BucketName']
-    ddb_table_name = os.environ['DynamoDBTableName']
-    ddb_primary_key = os.environ['DynamoDBPrimaryKey']
+    video_assets_bucket_name = os.environ['VideoAssetsS3BucketName']
+    inference_results_bucket_name = os.environ['InferenceResultsS3BucketName']
 
     video_clip_name = event['Records'][0]['s3']['object']['key']
     local_temp_path = '/tmp/' + video_clip_name
 
     # download mp4 video clip from s3 bucket
-    s3.meta.client.download_file(bucket_name, video_clip_name, local_temp_path)
-    print('bucket_name = {}'.format(bucket_name))
+    s3.meta.client.download_file(video_assets_bucket_name, video_clip_name, local_temp_path)
+    print('video_assets_bucket_name = {}'.format(video_assets_bucket_name))
     print('video_clip_name = {}'.format(video_clip_name))
 
     # load video clip
     vr = VideoReader(local_temp_path)
     duration = len(vr)
+
+    # construct the event data, which will be dumped into S3 bucket later
+    event_data = {
+        'event_id': str(uuid.uuid4()),
+        'video_source': os.path.join(video_assets_bucket_name, video_clip_name),
+        'frames_amount': frame_interval,
+        'frames_interval': frame_interval
+    }
+    frames_response_list = list()
 
     for frame_index in np.arange(0, duration, frame_interval):
         image = vr[frame_index].asnumpy()       # RGB order
@@ -57,40 +65,29 @@ def handler(event, context):
             confidences=detect_scores,
             conf_thresh=0.25)
 
-        if len(detect_boxes) == 0:
-            print('Frame {}/{}: image shape = {}, detect_boxes = {}, detect_scores = {}'.format(
-                frame_index + 1, duration, image.shape, detect_boxes, detect_scores))
-            continue
+        print('Frame {}/{}: image shape = {}, detect_boxes = {}, detect_scores = {}, recognize_boxes = {}, '
+              'recognize_scores = {}, recognize_texts = {}'.format(frame_index + 1, duration, image.shape,
+                                                                   detect_boxes, detect_scores,
+                                                                   recognize_boxes, recognize_scores, recognize_texts))
 
-        # step 3: save response into dynamodb
-        detection_response = json.dumps({
-            'boxes': detect_boxes,              # shape = (N, 4)
-            'confidences': detect_scores        # shape = (N, 1)
-        })
-        recognition_response = json.dumps({
-            'boxes': recognize_boxes,           # shape = (N, 4)
-            'confidences': recognize_scores,    # shape = (N, 1)
-            'texts': recognize_texts            # shape = (N, 1)
-        })
-
-        print('Frame {}/{}: image shape = {}, detection = {}, recognition = {}'.format(
-            frame_index + 1, duration, image.shape, detection_response, recognition_response))
-
-        event_id = str(uuid.uuid4())
-        insert_item = {
-            ddb_primary_key: {'S': event_id},
-            'video_source': {'S': os.path.join(bucket_name, video_clip_name)},
-            'frames_amount': {'S': str(duration)},
-            'frames_interval': {'S': str(frame_interval)},
-            'frame_index': {'S': str(frame_index)},
-            'detect_response': {'S': detection_response},
-            'recognize_response': {'S': recognition_response}
-        }
-
-        response = dynamodb.put_item(
-            TableName=ddb_table_name,
-            Item=insert_item
+        frames_response_list.append(
+            {
+                'frame_index': frame_index,
+                'detect_boxes': detect_boxes,           # shape = (N, 4)
+                'detect_scores': detect_scores,         # shape = (N, 1)
+                'recognize_boxes': recognize_boxes,     # shape = (N, 4)
+                'recognize_scores': recognize_scores,   # shape = (N, 1)
+                'recognize_texts': recognize_texts      # shape = (N, 1)
+            }
         )
+
+    # dump detection and recognition results into S3 bucket
+    event_data['response'] = frames_response_list
+    serialized_data = json.dumps(event_data, separators=(',', ':'))
+    s3_dump_response = s3.put_object(
+        Bucket=inference_results_bucket_name,
+        Key=video_clip_name + '_response.json',
+        Body=serialized_data)
 
     print('Lambda Task Completed.')
 
