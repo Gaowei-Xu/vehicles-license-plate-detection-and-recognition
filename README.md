@@ -47,7 +47,7 @@ sudo n stable
 PATH="$PATH"
 sudo n 16.2.0
 sudo npm install -g npm@7.19.0
-sudo npm install -g aws-cdk@1.115.0
+sudo npm install -g aws-cdk@1.116.0
 
 sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
