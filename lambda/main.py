@@ -71,7 +71,7 @@ def handler(event, context):
 
         frames_response_list.append(
             {
-                'frame_index': frame_index,
+                'frame_index': int(frame_index),
                 'detect_boxes': detect_boxes,           # shape = (N, 4)
                 'detect_scores': detect_scores,         # shape = (N, 1)
                 'recognize_boxes': recognize_boxes,     # shape = (N, 4)
