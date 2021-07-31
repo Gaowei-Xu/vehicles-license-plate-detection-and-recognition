@@ -8,7 +8,7 @@ from detector import CNLicensePlateDetector
 from recognizer import CNLicensePlateRecognizer
 
 
-s3 = boto3.resource('s3')
+s3 = boto3.client('s3')
 
 
 # Load the license plate detection & recognition model
@@ -82,9 +82,8 @@ def handler(event, context):
 
     # dump detection and recognition results into S3 bucket
     event_data['response'] = frames_response_list
-    print('event_data = {}'.format(event_data))
     serialized_data = json.dumps(event_data, ensure_ascii=False, indent=4)
-    print('serialized_data = {}'.format(serialized_data))
+    print('event_data = {}'.format(event_data))
 
     s3_dump_response = s3.put_object(
         Bucket=inference_results_bucket_name,
