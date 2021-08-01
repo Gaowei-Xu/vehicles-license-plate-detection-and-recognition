@@ -86,10 +86,9 @@ def handler(event, context):
     print('event_data = {}'.format(event_data))
 
     # upload inference data into S3 bucket
-    upload_bucket = s3.Bucket(inference_results_bucket_name)
-    s3_dump_response = upload_bucket.upload_fileobj(
-        serialized_data,
-        video_clip_name + '_response.json')
+    s3_dump_response = s3.Object(
+        inference_results_bucket_name,
+        video_clip_name + '_response.json').put(Body=serialized_data)
     print('s3_dump_response = {}'.format(s3_dump_response))
     print('Lambda Task Completed.')
 
