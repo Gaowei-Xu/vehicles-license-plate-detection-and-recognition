@@ -15,9 +15,6 @@ s3 = boto3.resource('s3')
 license_plate_detector = CNLicensePlateDetector(model_root_path='/opt/ml/models/detector')
 license_plate_recognizer = CNLicensePlateRecognizer(model_root_path='/opt/ml/models/recognizer')
 
-# process a frame every frame_interval
-frame_interval = 10
-
 
 def handler(event, context):
     """
@@ -29,6 +26,7 @@ def handler(event, context):
     """
     video_assets_bucket_name = os.environ['VideoAssetsS3BucketName']
     inference_results_bucket_name = os.environ['InferenceResultsS3BucketName']
+    frame_interval = int(os.environ['FramesInterval'])
 
     video_clip_name = event['Records'][0]['s3']['object']['key']
     local_temp_path = '/tmp/' + video_clip_name
@@ -86,6 +84,7 @@ def handler(event, context):
     print('event_data = {}'.format(event_data))
 
     # upload inference data into S3 bucket
+    key_name =
     s3_dump_response = s3.Object(
         inference_results_bucket_name,
         video_clip_name + '_response.json').put(Body=serialized_data)

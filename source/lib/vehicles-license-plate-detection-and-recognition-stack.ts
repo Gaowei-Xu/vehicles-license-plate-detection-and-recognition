@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as ecr from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
 import {S3EventSource} from "@aws-cdk/aws-lambda-event-sources";
 
@@ -8,6 +9,24 @@ import {S3EventSource} from "@aws-cdk/aws-lambda-event-sources";
 export class VehiclesLicensePlateDetectionAndRecognitionStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    /**
+     * User Parameters Configuration: Depends on User's Selection
+     */
+    const processFramesInterval = new cdk.CfnParameter(this, 'processFramesInterval', {
+        description: 'Please configure the frame interval for license detection and recognition',
+        type: 'String',
+        default: '10',
+        allowedValues: [
+            '5',
+            '10',
+            '15',
+            '20',
+            '25',
+            '30'
+        ]
+    });
+
 
     /**
      * S3 bucket provision: Create a bucket which is used to store all video clips
@@ -52,20 +71,47 @@ export class VehiclesLicensePlateDetectionAndRecognitionStack extends cdk.Stack 
             ]
     });
 
+
+    const ecrImage = ecr.Repository.fromRepositoryAttributes(
+        this,
+        'ecrImage',
+        {
+            repositoryName: 'ip-camera-ai-saas-vehicle-license-detection-and-recognition-lambda',
+            repositoryArn: 'arn:aws:ecr:us-west-2:366590864501:repository/ip-camera-ai-saas-vehicle-license-detection-and-recognition-lambda'
+    });
+
     const frameExtractorWithLicensePlateDetectionAndRecognition = new lambda.DockerImageFunction(
         this,
         'frameExtractorWithLicensePlateDetectionAndRecognition',
         {
-            code: lambda.DockerImageCode.fromImageAsset('./lambda/'),
+            code: lambda.DockerImageCode.fromEcr(ecrImage),
             environment: {
                 VideoAssetsS3BucketName: videosAsset.bucketName,
                 InferenceResultsS3BucketName: inferenceResults.bucketName,
+                FramesInterval: processFramesInterval.valueAsString,
             },
             timeout: cdk.Duration.minutes(15),
             role: role,
             memorySize: 10240,
         }
     );
+
+    // const frameExtractorWithLicensePlateDetectionAndRecognition = new lambda.DockerImageFunction(
+    //     this,
+    //     'frameExtractorWithLicensePlateDetectionAndRecognition',
+    //     {
+    //         code: lambda.DockerImageCode.fromImageAsset('./lambda/'),
+    //         environment: {
+    //             VideoAssetsS3BucketName: videosAsset.bucketName,
+    //             InferenceResultsS3BucketName: inferenceResults.bucketName,
+    //             FramesInterval: processFramesInterval.valueAsString,
+    //         },
+    //         timeout: cdk.Duration.minutes(15),
+    //         role: role,
+    //         memorySize: 10240,
+    //     }
+    // );
+
 
     /**
     * Add S3 trigger event
