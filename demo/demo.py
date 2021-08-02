@@ -5,8 +5,8 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 # configuration
-response_json_full_path = '../videos/VID_20210729_175545.ts'
-raw_input_video_clip_full_path = '../videos/VID_20210729_175545.ts_response.json'
+response_json_full_path = '../videos/test_1.ts'
+raw_input_video_clip_full_path = '../videos/test_1.ts_response.json'
 
 
 def plot_detection_recognition(image, bounding_boxes, scores, recognize_texts, textColor=(255, 0, 255), textSize=24):
