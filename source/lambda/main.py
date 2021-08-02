@@ -44,7 +44,7 @@ def handler(event, context):
     event_data = {
         'event_id': str(uuid.uuid4()),
         'video_source': os.path.join(video_assets_bucket_name, video_clip_name),
-        'frames_amount': frame_interval,
+        'frames_amount': duration,
         'frames_interval': frame_interval
     }
     frames_response_list = list()

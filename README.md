@@ -69,12 +69,8 @@ sudo usermod -aG docker ${USER}
 git clone https://github.com/Gaowei-Xu/vehicles-license-plate-detection-and-recognition.git
 cd vehicles-license-plate-detection-and-recognition/
 npm install
-cdk deploy
+npm run deploy
 ```
-
-
-
-
 
 
 ## 算法实现细节
@@ -225,7 +221,14 @@ nohup python3 license_plate_recognizer.py > train.log 2>&1 &
 
 ## 测试
 在解决方案部署成功之后，即可上传`.ts`格式或者`.mp4`格式的视频片段至`S3`桶（桶的名称前缀为`vehicleslicenseplatedetection-videosasset`）进行测试，
-建议视频片段的时间长度小于1分钟，测试视频样本
+建议视频片段的时间长度小于1分钟，测试视频样本上传到`S3`桶之后，会自动触发`lambda`函数进行推理识别，
+并将推理结果写入到`vehicleslicenseplatedete-inferenceresults`桶中。
+
+典型的图片帧推理结果如下所示：
+![demo_image_1](./demo/frames/frame_0.jpg)
+
+
+
 
 
 ## 许可
