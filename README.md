@@ -31,32 +31,7 @@
 
 整个部署过程包括编译镜像和资源部署，大概需要10-20分钟。
 
-### CloudFormation一键部署
-
-请参考下述步骤来基于CloudFormation进行部署：
-
-1. 登录AWS管理控制台，切换到您想将该解决方案部署到的区域；
-
-1. 点击下述按钮（中国与海外）来开启部署，目前仅支持海外`us-east-1`和`us-west-2`区域；
-
-    - **标准（Standard）区域 (us-east-1, us-west-2)**
-
-    [![Launch Stack](launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/template?stackName=IPCSolutionStack&templateURL=https://sh-solutions-std.s3.amazonaws.com/ip-camera-ai-saas/v1.1.0/IpcAiSaasStack.template)
-
-1. 点击 **下一步**. 根据您需要可以更改堆栈名称，选择`processFramesInterval`的值，该值为间隔处理的视频帧数；
-
-1. 点击 **下一步**. 配置堆栈选项 (可选)；
-
-1. 点击 **下一步**. 审核堆栈配置，勾选 **我确认，AWS CloudFormation 可能创建具有自定义名称的 IAM 资源**，点击 **创建堆栈** 开启创建；
-
-**注意: 当您不再需要该解决方案时，您可以直接从Cloudformation控制台删除它。**
-
-
-
-
-### CDK部署
-
-该解决方案也支持`aws-cdk`从源码进行部署，部署区域的`lambda`服务需要支持从容器镜像启动，部署示例如下：
+该解决方案支持`aws-cdk`从源码进行部署，部署区域的`lambda`服务需要支持从容器镜像启动，部署示例如下：
 
 1. 启动`Amazon EC2`实例，如`us-east-1`区域选择系统镜像`Ubuntu Server 18.04 LTS (HVM), SSD Volume Type - ami-0747bdcabd34c712a (64-bit x86) / ami-08353a25e80beea3e (64-bit Arm)
 `，机型选择`t2.large`，添加存储`128 GiB`，启动机器；
