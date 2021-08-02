@@ -69,7 +69,7 @@ sudo usermod -aG docker ${USER}
 git clone https://github.com/Gaowei-Xu/vehicles-license-plate-detection-and-recognition.git
 cd vehicles-license-plate-detection-and-recognition/source/
 npm install
-npm run deploy --parameters processFramesInterval=10
+npm run deploy
 ```
 
 
