@@ -67,9 +67,9 @@ sudo usermod -aG docker ${USER}
 4. 部署方案
 ```angular2html
 git clone https://github.com/Gaowei-Xu/vehicles-license-plate-detection-and-recognition.git
-cd vehicles-license-plate-detection-and-recognition/
+cd vehicles-license-plate-detection-and-recognition/source/
 npm install
-npm run deploy
+npm run deploy --parameters processFramesInterval=10
 ```
 
 
