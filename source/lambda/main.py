@@ -84,7 +84,6 @@ def handler(event, context):
     print('event_data = {}'.format(event_data))
 
     # upload inference data into S3 bucket
-    key_name =
     s3_dump_response = s3.Object(
         inference_results_bucket_name,
         video_clip_name + '_response.json').put(Body=serialized_data)
