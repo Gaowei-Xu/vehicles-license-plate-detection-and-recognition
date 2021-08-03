@@ -81,7 +81,7 @@ npm run deploy
 | 任务         |  模型                 |
 |--------------|----------------------|
 | 车牌检测       |   [detector-tensorflow-2.5.0](https://ip-camera-ai-saas.s3.amazonaws.com/models/license_plates_detection/detector.zip)   |
-| 车牌识别       |   [recognizer-tensorflow-2.5.0](https://ip-camera-ai-saas.s3.amazonaws.com/models/license_plates_recognition/recognizer.zip)   |
+| 车牌识别（暂不支持新能源牌照）      |   [recognizer-tensorflow-2.5.0](https://ip-camera-ai-saas.s3.amazonaws.com/models/license_plates_recognition/recognizer.zip)   |
 
 
 
