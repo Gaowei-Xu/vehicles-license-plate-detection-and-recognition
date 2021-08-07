@@ -185,7 +185,7 @@ wget -c https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_op
 #### 4. 开始车牌检测模型训练
 执行如下脚本启动后台训练：
 ```angular2html
-nohup ./darknet detector train data/license_plates.data cfg/yolov4-license-plates.cfg models/yolov4.conv.137 -dont_show -mjpeg_port 8090 -map 2>&1 > train.log &
+nohup ./darknet detector train data/license_plates.data cfg/yolov4-license-plates.cfg models/yolov4.conv.137 -dont_show -mjpeg_port 8090 -map > train.log 2>&1 &
 ```
    
 ### 训练车牌识别模型
